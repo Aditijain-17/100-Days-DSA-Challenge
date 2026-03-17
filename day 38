@@ -1,0 +1,144 @@
+Problem: Deque (Double-Ended Queue)
+
+A Deque is a linear data structure that allows insertion and deletion of elements from both the front and the rear. It provides more flexibility than a standard queue or stack.
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 100
+
+typedef struct {
+    int arr[MAX];
+    int front;
+    int rear;
+    int size;
+} Deque;
+
+void init(Deque* dq) {
+    dq->front = -1;
+    dq->rear = -1;
+    dq->size = 0;
+}
+
+int isEmpty(Deque* dq) {
+    return dq->size == 0;
+}
+
+int isFull(Deque* dq) {
+    return dq->size == MAX;
+}
+
+void push_front(Deque* dq, int x) {
+    if (isFull(dq)) return;
+
+    if (isEmpty(dq)) {
+        dq->front = dq->rear = 0;
+    } else {
+        dq->front = (dq->front - 1 + MAX) % MAX;
+    }
+
+    dq->arr[dq->front] = x;
+    dq->size++;
+}
+
+void push_back(Deque* dq, int x) {
+    if (isFull(dq)) return;
+
+    if (isEmpty(dq)) {
+        dq->front = dq->rear = 0;
+    } else {
+        dq->rear = (dq->rear + 1) % MAX;
+    }
+
+    dq->arr[dq->rear] = x;
+    dq->size++;
+}
+
+void pop_front(Deque* dq) {
+    if (isEmpty(dq)) {
+        printf("-1\n");
+        return;
+    }
+
+    printf("%d\n", dq->arr[dq->front]);
+
+    if (dq->front == dq->rear) {
+        dq->front = dq->rear = -1;
+    } else {
+        dq->front = (dq->front + 1) % MAX;
+    }
+
+    dq->size--;
+}
+
+void pop_back(Deque* dq) {
+    if (isEmpty(dq)) {
+        printf("-1\n");
+        return;
+    }
+
+    printf("%d\n", dq->arr[dq->rear]);
+
+    if (dq->front == dq->rear) {
+        dq->front = dq->rear = -1;
+    } else {
+        dq->rear = (dq->rear - 1 + MAX) % MAX;
+    }
+
+    dq->size--;
+}
+
+void getFront(Deque* dq) {
+    if (isEmpty(dq)) printf("-1\n");
+    else printf("%d\n", dq->arr[dq->front]);
+}
+
+void getBack(Deque* dq) {
+    if (isEmpty(dq)) printf("-1\n");
+    else printf("%d\n", dq->arr[dq->rear]);
+}
+
+void getSize(Deque* dq) {
+    printf("%d\n", dq->size);
+}
+
+int main() {
+    Deque dq;
+    init(&dq);
+
+    int n;
+    scanf("%d", &n);
+
+    while (n--) {
+        char op[20];
+        scanf("%s", op);
+
+        if (op[0] == 'p' && op[5] == 'f') {
+            int x;
+            scanf("%d", &x);
+            push_front(&dq, x);
+        }
+        else if (op[0] == 'p' && op[5] == 'b') {
+            int x;
+            scanf("%d", &x);
+            push_back(&dq, x);
+        }
+        else if (op[0] == 'p' && op[1] == 'o' && op[4] == 'f') {
+            pop_front(&dq);
+        }
+        else if (op[0] == 'p' && op[1] == 'o' && op[4] == 'b') {
+            pop_back(&dq);
+        }
+        else if (op[0] == 'f') {
+            getFront(&dq);
+        }
+        else if (op[0] == 'b') {
+            getBack(&dq);
+        }
+        else if (op[0] == 's') {
+            getSize(&dq);
+        }
+    }
+
+    return 0;
+}
