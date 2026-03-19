@@ -1,0 +1,100 @@
+Problem Statement:
+Find the height (maximum depth) of a given binary tree.
+
+#include <stdio.h>
+#include <stdlib.h>
+
+struct TreeNode {
+    int val;
+    struct TreeNode* left;
+    struct TreeNode* right;
+};
+
+struct Queue {
+    struct TreeNode** arr;
+    int front, rear, size, capacity;
+};
+
+struct Queue* createQueue(int cap) {
+    struct Queue* q = (struct Queue*)malloc(sizeof(struct Queue));
+    q->capacity = cap;
+    q->front = 0;
+    q->size = 0;
+    q->rear = cap - 1;
+    q->arr = (struct TreeNode**)malloc(cap * sizeof(struct TreeNode*));
+    return q;
+}
+
+void enqueue(struct Queue* q, struct TreeNode* node) {
+    q->rear = (q->rear + 1) % q->capacity;
+    q->arr[q->rear] = node;
+    q->size++;
+}
+
+struct TreeNode* dequeue(struct Queue* q) {
+    struct TreeNode* node = q->arr[q->front];
+    q->front = (q->front + 1) % q->capacity;
+    q->size--;
+    return node;
+}
+
+int isEmpty(struct Queue* q) {
+    return q->size == 0;
+}
+
+struct TreeNode* newNode(int val) {
+    struct TreeNode* node = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+    node->val = val;
+    node->left = node->right = NULL;
+    return node;
+}
+
+struct TreeNode* buildTree(int arr[], int n) {
+    if (n == 0 || arr[0] == -1)
+        return NULL;
+
+    struct Queue* q = createQueue(n);
+    struct TreeNode* root = newNode(arr[0]);
+    enqueue(q, root);
+
+    int i = 1;
+    while (i < n) {
+        struct TreeNode* curr = dequeue(q);
+
+        if (arr[i] != -1) {
+            curr->left = newNode(arr[i]);
+            enqueue(q, curr->left);
+        }
+        i++;
+
+        if (i < n && arr[i] != -1) {
+            curr->right = newNode(arr[i]);
+            enqueue(q, curr->right);
+        }
+        i++;
+    }
+
+    return root;
+}
+
+int height(struct TreeNode* root) {
+    if (!root)
+        return 0;
+    int left = height(root->left);
+    int right = height(root->right);
+    return (left > right ? left : right) + 1;
+}
+
+int main() {
+    int n;
+    scanf("%d", &n);
+
+    int* arr = (int*)malloc(n * sizeof(int));
+    for (int i = 0; i < n; i++)
+        scanf("%d", &arr[i]);
+
+    struct TreeNode* root = buildTree(arr, n);
+    printf("%d", height(root));
+
+    return 0;
+}
